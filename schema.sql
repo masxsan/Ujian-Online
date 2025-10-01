@@ -1,0 +1,54 @@
+-- MySQL schema for Rapor Kokurikuler SMP
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('Guru','Kepala Sekolah','Pengawas') NOT NULL,
+  kelas_id INT NULL,
+  school_name VARCHAR(160) NOT NULL,
+  created_at DATETIME NOT NULL,
+  INDEX (kelas_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS kelas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama_kelas VARCHAR(80) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS siswa (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  kelas_id INT NOT NULL,
+  nisn VARCHAR(32) DEFAULT NULL,
+  nama VARCHAR(160) NOT NULL,
+  gender ENUM('L','P') DEFAULT NULL,
+  INDEX (kelas_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS jurnal (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  kelas_id INT NOT NULL,
+  tanggal DATE NOT NULL,
+  mapel VARCHAR(120) NOT NULL,
+  dpl_dimensi VARCHAR(160) DEFAULT NULL,
+  tema VARCHAR(160) DEFAULT NULL,
+  jenis_kokurikuler VARCHAR(160) DEFAULT NULL,
+  bentuk_kegiatan VARCHAR(160) DEFAULT NULL,
+  mapel_terkait VARCHAR(160) DEFAULT NULL,
+  refleksi TEXT DEFAULT NULL,
+  status ENUM('draft','submitted') NOT NULL DEFAULT 'draft',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_user_tanggal_mapel (user_id, tanggal, mapel)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS progres_siswa (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  jurnal_id INT NOT NULL,
+  siswa_id INT NOT NULL,
+  progres VARCHAR(160) DEFAULT NULL,
+  catatan TEXT DEFAULT NULL,
+  UNIQUE KEY uniq_jurnal_siswa (jurnal_id, siswa_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
